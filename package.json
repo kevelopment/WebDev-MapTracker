@@ -1,0 +1,27 @@
+{
+  "name": "webdev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./server/app.js",
+  "scripts": {
+    "lint": "eslint ./scripts/*.js",
+    "build": "npm install && eslint ./client/scripts/*.js && eslint ./app.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && babili ./public/main.js > ./public/main.min.js && lessc --clean-css ./client/styles/style.less ./public/style.min.css && copy client\\index.html public",
+    "debug": "npm install && eslint ./client/scripts/*.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && lessc ./client/styles/style.less ./public/style.min.css && copy client\\index.html public",
+    "start": "node app.js",
+    "cleanWin": "rmdir /s public && rmdir /s node_modules",
+    "clean": "rm -r public && rm -r node_modules"
+  },
+  "dependencies": {
+    "express": "*",
+	"google-maps-api": "*"
+  },
+  "devDependencies": {
+    "babili" : "*",
+    "less": "*",
+    "less-plugin-clean-css": "*",
+    "browserify": "^14.3.0",
+    "eslint": "^3.19.00"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,12 @@
+﻿DONE:
+	- Browserify/Babili/Less/Lint npm Scripts erstellt
+	- HTML Grundgerüst
+    	- Erste Koordinate in Karte als Trier setzen (und zentrieren)
+
+TODO:
+	- JSON einlesen
+	- Daten befüllen
+	- Paging
+	- Dynamik überprüfen
+	- NPM-Scripte überprüfen 
+	- Browserify mehrere dateien zusammenlegen lassen
