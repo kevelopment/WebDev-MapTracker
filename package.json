@@ -5,8 +5,8 @@
   "main": "./server/app.js",
   "scripts": {
     "lint": "eslint ./scripts/*.js",
-    "build": "npm install && eslint ./client/scripts/*.js && eslint ./app.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && babili ./public/main.js > ./public/main.min.js && lessc --clean-css ./client/styles/style.less ./public/style.min.css && copy client\\index.html public",
-    "debug": "npm install && eslint ./client/scripts/*.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && lessc ./client/styles/style.less ./public/style.min.css && copy client\\index.html public",
+    "build": "npm install && eslint ./client/scripts/*.js && eslint ./app.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && babili ./public/main.js > ./public/main.min.js && lessc --clean-css ./client/styles/style.less ./public/style.min.css && cp client/index.html public",
+    "debug": "npm install && eslint ./client/scripts/*.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && lessc ./client/styles/style.less ./public/style.min.css && cp client/index.html public",
     "start": "node app.js",
     "cleanWin": "rmdir /s public && rmdir /s node_modules",
     "clean": "rm -r public && rm -r node_modules"

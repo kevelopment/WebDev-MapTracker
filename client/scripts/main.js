@@ -1,5 +1,4 @@
 var mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
-var net = require("net");
 
 mapsapi().then(
 	function (maps) {
@@ -9,12 +8,20 @@ mapsapi().then(
 	}
 );
 
-var client = new net.Socket();
-client.connect(8080, "127.0.0.1", () => {
-	console.log("Connected");
-	client.write("Hello, server!");
-});
-
-client.on("data", (data) => {
-	console.log("Received: " + data);
-});
+/*
+(function () {
+var connection = new WebSocket("ws://localhost:8080");
+connection.onopen = () => {
+	console.log("Connection opened.");
+};
+connection.onerror = () => {
+	console.log("Unable to connect.");
+};
+connection.onclose = () => {
+	console.log("Connection closed.");
+};
+connection.onmessage = event => {
+	console.log(event.data, "Received: ");
+};
+//});();
+*/
