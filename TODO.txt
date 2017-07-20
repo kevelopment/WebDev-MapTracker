@@ -1,12 +1,13 @@
-﻿DONE:
+DONE:
 	- Browserify/Babili/Less/Lint npm Scripts erstellt
 	- HTML Grundgerüst
     	- Erste Koordinate in Karte als Trier setzen (und zentrieren)
+	- Tracks werden aus JSON vom Server über GET /tracks geladen und angezeigt
 
 TODO:
-	- JSON einlesen
-	- Daten befüllen
-	- Paging
+	- Pagination der Tracks (ordentliches Anzeigen)
 	- Dynamik überprüfen
 	- NPM-Scripte überprüfen 
-	- Browserify mehrere dateien zusammenlegen lassen
+	- Browserify mehrere Dateien zusammenlegen lassen
+	- an (track) <li> Elem clickListener anhängen zum Track zeichnen auf Map Objekt
+	- Höhenprofil des ausgewählten Tracks zeichnen
