@@ -4,16 +4,17 @@ const fs = require("fs");
 module.exports = function (app) {
 	let trackNames = getTrackNames(path.join(__dirname, "./data"));
 
-	// handle GET request
+	// handle GET /tracks request => send stringified JSON response
 	app.get("/tracks", function (req, res) {
-		res.send("track names: " + trackNames);
+		res.send(JSON.stringify(trackNames));
 	});
-	// handle POST request
+	// handle POST request not required yet
 	app.post("/", function (req, res) {
 		res.send("POST request");
 	});
 };
 
+// load track names from /data folder
 function getTrackNames(dataPath) {
 	let trackNames = [];
 	fs.readdirSync(dataPath).forEach((file)=>{

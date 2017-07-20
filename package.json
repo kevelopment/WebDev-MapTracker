@@ -13,14 +13,15 @@
   },
   "dependencies": {
     "express": "*",
-	"google-maps-api": "*"
+    "google-maps-api": "*"
   },
   "devDependencies": {
-    "babili" : "*",
-    "less": "*",
-    "less-plugin-clean-css": "*",
+    "babili": "*",
     "browserify": "^14.3.0",
-    "eslint": "^3.19.00"
+    "eslint": "^4.2.0",
+    "eslint-config-google": "^0.9.1",
+    "less": "*",
+    "less-plugin-clean-css": "*"
   },
   "author": "",
   "license": "ISC"
