@@ -12,8 +12,11 @@
     "clean": "rm -r public && rm -r node_modules"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "*",
-    "google-maps-api": "*"
+    "fetch-api": "0.0.2",
+    "google-maps-api": "*",
+    "node-fetch": "*"
   },
   "devDependencies": {
     "babili": "*",

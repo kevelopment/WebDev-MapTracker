@@ -31,34 +31,32 @@ nav {
 }
 nav ul {
   list-style-type: none;
-  width: 100%;
-  height: 3em;
+  width: auto;
+  height: auto;
   margin: 0.5em;
-  padding: 0;
 }
 nav ul li {
+  padding: 1em;
   display: inline-block;
-  width: 4em;
+  width: auto;
+  height: 3em;
 }
 .tracker-list {
   position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
   top: 3em;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
 }
 .tracker-list ul {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: auto;
+  height: 100%;
 }
 .tracker-list ul :nth-child(even) {
   background: #DDD;
@@ -66,11 +64,13 @@ nav ul li {
 .tracker-list ul :nth-child(odd) {
   background: #FFF;
 }
-.tracker-item {
-  background-color: aliceblue;
-  display: inline-block;
-  width: 100%;
-  height: 2em;
+.tracker-list ul .tracker-item {
+  padding: .5em;
+  width: auto;
+  height: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 section {
   position: absolute;
