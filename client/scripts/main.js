@@ -88,4 +88,5 @@ function drawOnMap(json) {
 	// reihenfolge wichtig!!
 	map.fitBounds(bounds);
 	trackPath.setMap(map);
+	// map.setZoom(map.getZoom() - 1); => sieht besser aus
 }
