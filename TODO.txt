@@ -3,11 +3,15 @@ DONE:
 	- HTML Grundgerüst
     	- Erste Koordinate in Karte als Trier setzen (und zentrieren)
 	- Tracks werden aus JSON vom Server über GET /tracks geladen und angezeigt
+	- an (track) <li> Elem clickListener anhängen zum Track zeichnen auf Map Objekt
+	- Tracks werden bei onClick auf Map gezeichnet und zentriert
 
 TODO:
 	- Pagination der Tracks (ordentliches Anzeigen)
 	- Dynamik überprüfen
 	- NPM-Scripte überprüfen 
 	- Browserify mehrere Dateien zusammenlegen lassen
-	- an (track) <li> Elem clickListener anhängen zum Track zeichnen auf Map Objekt
 	- Höhenprofil des ausgewählten Tracks zeichnen
+	- tracks als key value paare speichern: eindeutige ID vergeben 
+	zum auslesen der Dateien, momentan noch “random”
+	- css/less aufräumen viel überlappend

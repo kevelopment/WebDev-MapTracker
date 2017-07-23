@@ -5,6 +5,8 @@ var serverUrl = "http://localhost:8080/tracks";
 var trackUrl = "http://localhost:8080/track";
 var mapAPI;
 var map;
+var coordinates;
+var trackPath;
 
 // init maps api + map frame
 mapsapi().then(
@@ -40,11 +42,11 @@ window.onload = function () {
 		});
 };
 
+// onclick: get track data from server
 function onClick() {
-	console.log(this.innerHTML);
-
+	console.log(data.indexOf(this.innerHTML));
 	fetch(trackUrl,
-		{ method: "POST", body: "name=" + this.innerHTML })
+		{ method: "POST", body: this.innerHTML })
 		.then(function (res) {
 			return res.text();
 		}).then(function (body) {
@@ -56,13 +58,20 @@ function onClick() {
 function drawOnMap(json) {
 	console.log("drawing...");
 	let entries = json.features[0].geometry.coordinates;
-	var coordinates = [];
 
+	// reset previous map polyline
+	if (trackPath !== undefined) {
+		trackPath.setMap(null);
+	}
+
+	// fill coordinates from file
+	coordinates = [];
 	for (var i in entries) {
 		coordinates.push({ lat: entries[i][1], lng: entries[i][0] });
 	}
 
-	var trackPath = new mapAPI.Polyline({
+	// create polyline
+	trackPath = new mapAPI.Polyline({
 		path: coordinates,
 		geodesic: true,
 		strokeColor: "#FF0000",
@@ -70,5 +79,13 @@ function drawOnMap(json) {
 		strokeWeight: 2
 	});
 
+	// get polyline bounds
+	var bounds = new mapAPI.LatLngBounds();
+	trackPath.getPath().forEach(function (e) {
+		bounds.extend(e);
+	});
+
+	// reihenfolge wichtig!!
+	map.fitBounds(bounds);
 	trackPath.setMap(map);
 }

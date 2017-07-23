@@ -1,9 +1,10 @@
 const path = require("path");
 const fs = require("fs");
 const dataPath = (path.join(__dirname, "./data"));
+var trackNames;
 
 module.exports = function (app) {
-	let trackNames = getTrackNames();
+	trackNames = getTrackNames();
 
 	// handle GET /tracks request => send stringified JSON response
 	app.get("/tracks", function (req, res) {
@@ -14,12 +15,14 @@ module.exports = function (app) {
 	// handle POST request not required yet
 	app.post("/track", function (req, res) {
 		console.log("got get /track request");
-		//var track = req.param("name", null);
-		/*
-		* TODO: get track name from req body!!
-		*/
-		console.log(req);
-		res.send(getTrackName(/*tackName*/));
+		var trackID = "";
+		req.on("data", function (chunk) {
+			trackID += chunk.toString();
+		});
+		req.on("end", function () {
+			console.log(trackID);
+			res.send(getTrackName(trackID));
+		});
 	});
 };
 
@@ -34,13 +37,9 @@ function getTrackNames() {
 	return trackNames;
 }
 
-function getTrackName() {
-	/*
-	let content = fs.readFileSync(path.join(dataPath, trackName));
-	let json = JSON.parse(content);
-	return JSON.stringify(json);
-	*/
-	let content = fs.readFileSync(path.join(dataPath, "1.json"));
+function getTrackName(trackID) {
+	var idx = trackNames.indexOf(trackID) + 1;
+	let content = fs.readFileSync(path.join(dataPath, idx + ".json"));
 	let json = JSON.parse(content);
 	return JSON.stringify(json);
 }

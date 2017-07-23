@@ -72,6 +72,9 @@ nav ul li {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.tracker-list ul .tracker-item :hover {
+  background: #EEE;
+}
 section {
   position: absolute;
   left: 1em;
