@@ -7,21 +7,22 @@ module.exports = function (app) {
 	trackNames = getTrackNames();
 
 	// handle GET /tracks request => send stringified JSON response
-	app.get("/tracks", function (req, res) {
-		console.log("got get /tracks request");
+	app.get("/getAllTracks", function (req, res) {
+		console.log("GET /getrAllTracks");
 		res.send(JSON.stringify(trackNames));
 	});
 
 	// handle POST request not required yet
 	app.post("/track", function (req, res) {
-		console.log("got get /track request");
+		console.log("GET /track ");		
+		
 		var trackID = "";
 		req.on("data", function (chunk) {
 			trackID += chunk.toString();
 		});
 		req.on("end", function () {
-			console.log(trackID);
-			res.send(getTrackName(trackID));
+			console.log("GOT DATA: "+JSON.parse(trackID));
+			res.send(getTrackName(JSON.parse(trackID)));
 		});
 	});
 };
@@ -38,8 +39,8 @@ function getTrackNames() {
 }
 
 function getTrackName(trackID) {
-	var idx = trackNames.indexOf(trackID) + 1;
-	let content = fs.readFileSync(path.join(dataPath, idx + ".json"));
+	console.log(trackID, typeof(trackID));
+	let content = fs.readFileSync(path.join(dataPath, trackID+".json"));
 	let json = JSON.parse(content);
 	return JSON.stringify(json);
 }

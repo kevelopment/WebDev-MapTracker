@@ -1,7 +1,6 @@
 var mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
 var fetch = require("node-fetch");
-var data;
-var serverUrl = "http://localhost:8080/tracks";
+var serverUrl = "http://localhost:8080/getAllTracks";
 var trackUrl = "http://localhost:8080/track";
 var mapAPI;
 var map;
@@ -26,37 +25,73 @@ window.onload = function () {
 		.then(function (res) {
 			return res.text();
 		}).then(function (body) {
-			data = JSON.parse(body);
+			var data = JSON.parse(body);
+			console.log(JSON.parse(body));
 			// for each item in tracks: create list item
 			var li;
-			for (var track in data) {
+
+			for (var track = 0; track < data.length; track++) {
+				// console.log(track, data[track]);
 				li = document.createElement("li");
 				li.setAttribute("class", "tracker-item");
+				li.setAttribute("id", track + 1);
 				li.innerHTML = data[track];
 				li.addEventListener("click", onClick, false);
 				trackList.appendChild(li);
 			}
-			console.log(JSON.parse(body));
-		}).then(function (json) {
-			console.log(json);
 		});
+	// .then(function (json) {
+	// 	console.log(json);
+	// });
 };
 
 // onclick: get track data from server
 function onClick() {
-	console.log(data.indexOf(this.innerHTML));
+	// console.log("li.id: " + this.id);
+	var body = this.id;
 	fetch(trackUrl,
-		{ method: "POST", body: this.innerHTML })
+		{ method: "POST", body: JSON.stringify(body) })
 		.then(function (res) {
 			return res.text();
 		}).then(function (body) {
 			let json = JSON.parse(body);
 			drawOnMap(json);
+			drawHeightProfile(json);
 		});
 }
 
+function drawHeightProfile(json) {
+	console.log(json);
+	let entries = json.features[0].geometry.coordinates;
+
+	var canvas = document.getElementById("heightGraph");
+	var ctx = canvas.getContext("2d");
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	console.log(ctx.canvas.width, ctx.canvas.height);
+	console.log(entries);
+	var max = -1;
+	for (var data in entries) {
+		if (entries[data][2] > max) {
+			max = entries[data][2];
+		}
+	}
+	var lineSize = ctx.canvas.width / entries.length;
+	var heightSize = ctx.canvas.height / max;
+	console.log(lineSize, max, heightSize);
+	ctx.lineWidth = lineSize;
+	ctx.beginPath();
+	for (var index = 0; index < entries.length; index++) {
+		var height = entries[index][2];
+		console.log("HEIGHT: " + height);
+		ctx.moveTo(index * lineSize, ctx.canvas.height);
+		ctx.lineTo(index * lineSize, ctx.canvas.height - (height * heightSize));
+	}
+	ctx.stroke();
+	console.log("HIGHTDONE");
+}
+
 function drawOnMap(json) {
-	console.log("drawing...");
+	console.log("drawOnMap");
 	let entries = json.features[0].geometry.coordinates;
 
 	// reset previous map polyline
