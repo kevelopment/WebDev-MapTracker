@@ -6,6 +6,7 @@ var mapAPI;
 var map;
 var coordinates;
 var trackPath;
+var tracks = [];
 
 // init maps api + map frame
 mapsapi().then(
@@ -19,26 +20,18 @@ mapsapi().then(
 
 // onload: create http get request to init track list
 window.onload = function () {
-	let trackList = document.getElementById("tracks");
-
 	fetch(serverUrl)
 		.then(function (res) {
 			return res.text();
 		}).then(function (body) {
 			var data = JSON.parse(body);
 			console.log(JSON.parse(body));
-			// for each item in tracks: create list item
-			var li;
 
-			for (var track = 0; track < data.length; track++) {
-				// console.log(track, data[track]);
-				li = document.createElement("li");
-				li.setAttribute("class", "tracker-item");
-				li.setAttribute("id", data[track].trackID);
-				li.innerHTML = data[track].trackName;
-				li.addEventListener("click", onClick, false);
-				trackList.appendChild(li);
+			for (var idx in data) {
+				tracks.push(data[idx]);
 			}
+
+			fillTracks(document.getElementById("tracks"));
 		});
 	// .then(function (json) {
 	// 	console.log(json);
@@ -124,4 +117,32 @@ function drawOnMap(json) {
 	map.fitBounds(bounds);
 	trackPath.setMap(map);
 	// map.setZoom(map.getZoom() - 1); => sieht besser aus
+}
+
+function fillTracks(trackList) {
+	// for each item in tracks: create list item
+	var li;
+	var winHeight = document.getElementById("trackSelector").offsetHeight;
+	var navHeight = document.getElementById("controls").offsetHeight;
+
+	li = document.createElement("li");
+	li.innerHTML = tracks[0].trackName;
+	trackList.appendChild(li);
+
+	var liHeight = li.offsetHeight + 16; // + padding top & bottom
+	li.parentNode.removeChild(li);
+
+	var listHeight = winHeight - navHeight;
+	var nrOfEntries = Math.floor(listHeight / liHeight);
+	console.log("nrOfEntries: ", nrOfEntries);
+	for (var track = 0; track < nrOfEntries; track++) {
+		tracks.push(tracks[track]);
+		// console.log(track, data[track]);
+		li = document.createElement("li");
+		li.setAttribute("class", "tracker-item");
+		li.setAttribute("id", tracks[track].trackID);
+		li.innerHTML = tracks[track].trackName;
+		li.addEventListener("click", onClick, false);
+		trackList.appendChild(li);
+	}
 }

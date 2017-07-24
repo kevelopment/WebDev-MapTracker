@@ -13,6 +13,7 @@ main {
   bottom: 0;
 }
 aside {
+  background-color: darkturquoise;
   height: 100%;
   width: 30%;
   position: absolute;
@@ -20,35 +21,19 @@ aside {
   top: 0;
   bottom: 0;
 }
-nav {
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 3em;
-  position: absolute;
-  background-color: darkturquoise;
-}
 nav ul {
   list-style-type: none;
   width: auto;
   height: auto;
-  margin: 0.5em;
+  margin: 0;
 }
 nav ul li {
   padding: 1em;
   display: inline-block;
   width: auto;
-  height: 3em;
+  height: auto;
 }
 .tracker-list {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  top: 3em;
-  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
@@ -56,13 +41,16 @@ nav ul li {
   margin: 0;
   padding: 0;
   width: auto;
-  height: 100%;
+  height: auto;
 }
 .tracker-list ul :nth-child(even) {
   background: #DDD;
 }
 .tracker-list ul :nth-child(odd) {
   background: #FFF;
+}
+.tracker-list ul :hover {
+  background: #EEE;
 }
 .tracker-list ul .tracker-item {
   padding: .5em;
@@ -72,14 +60,15 @@ nav ul li {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.tracker-list ul .tracker-item :hover {
-  background: #EEE;
-}
 section {
   position: absolute;
   left: 1em;
   bottom: 1em;
   width: 25%;
   height: 20%;
-  background: black;
+  background: white;
+}
+section canvas {
+  width: 100%;
+  height: 100%;
 }
