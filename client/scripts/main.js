@@ -34,8 +34,8 @@ window.onload = function () {
 				// console.log(track, data[track]);
 				li = document.createElement("li");
 				li.setAttribute("class", "tracker-item");
-				li.setAttribute("id", track + 1);
-				li.innerHTML = data[track];
+				li.setAttribute("id", data[track].trackID);
+				li.innerHTML = data[track].trackName;
 				li.addEventListener("click", onClick, false);
 				trackList.appendChild(li);
 			}
