@@ -14,7 +14,7 @@ main {
 }
 
 aside {
-    background-color: darkturquoise;
+    background-color: #9CCC65;
     height: 100%;
     width: 30%;
     position: absolute;
@@ -43,13 +43,25 @@ nav{
     flex-direction: row;
     flex-wrap: wrap;
     ul {
-        :nth-child(even) {background: #DDD}
-        :nth-child(odd) {background: #FFF}
+        :nth-child(even) {
+            background: #DDD;
+        }
+        :nth-child(odd) {
+            background: #FFF;
+        }
         margin: 0;
         padding: 0;
         width: auto;
         height: auto;
-        :hover {background: #EEE}
+
+        :hover:nth-child(odd) {
+            background: #DCEDC8;
+        }
+
+        :hover:nth-child(even) {
+            background: #C5E1A5;
+        }
+
         .tracker-item {
             padding: .5em;
             width: auto;

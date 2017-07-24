@@ -13,7 +13,7 @@ main {
   bottom: 0;
 }
 aside {
-  background-color: darkturquoise;
+  background-color: #9CCC65;
   height: 100%;
   width: 30%;
   position: absolute;
@@ -49,8 +49,11 @@ nav ul li {
 .tracker-list ul :nth-child(odd) {
   background: #FFF;
 }
-.tracker-list ul :hover {
-  background: #EEE;
+.tracker-list ul :hover:nth-child(odd) {
+  background: #DCEDC8;
+}
+.tracker-list ul :hover:nth-child(even) {
+  background: #C5E1A5;
 }
 .tracker-list ul .tracker-item {
   padding: .5em;

@@ -75,12 +75,12 @@ function drawHeightProfile(json) {
 	ctx.beginPath();
 	for (var index = 0; index < entries.length; index++) {
 		var height = entries[index][2];
-		console.log("HEIGHT: " + height);
+		//console.log("HEIGHT: " + height);
 		ctx.moveTo(index * lineSize, ctx.canvas.height);
 		ctx.lineTo(index * lineSize, ctx.canvas.height - (height * heightSize));
 	}
 	ctx.stroke();
-	console.log("HIGHTDONE");
+	//console.log("HIGHTDONE");
 }
 
 function drawOnMap(json) {
