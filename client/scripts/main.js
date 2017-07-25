@@ -75,7 +75,7 @@ function onClick() {
 		lastTrack.style.backgroundColor = "";
 	}
 	lastTrack = this;
-	this.style.backgroundColor = "#9CCC65";
+	this.style.backgroundColor = "#8BC34A";
 	var body = this.id;
 	fetch(trackUrl,
 		{ method: "POST", body: JSON.stringify(body) })
@@ -212,7 +212,7 @@ function fillTracks() {
 		li.innerHTML = tracks[track].trackName;
 		li.addEventListener("click", onClick, false);
 		if (lastTrack !== null && lastTrack.innerHTML === tracks[track].trackName) {
-			li.style.backgroundColor = "#9CCC65";
+			li.style.backgroundColor = "#8BC34A";
 			lastTrack = li;
 		}
 		trackList.appendChild(li);
