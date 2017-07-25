@@ -5,7 +5,13 @@ const controller = require("./server/controller");
 
 let app = express();
 
-const PORT = 8080;
+var PORT = 8080;
+
+if (process.argv.length >= 3) {
+	if (!isNaN(process.argv[2])) {
+		PORT = process.argv[2];
+	}
+}
 
 app.use(express.static(path.join(__dirname, "./public")));
 app.use(bodyParser.urlencoded({ extended: false }));

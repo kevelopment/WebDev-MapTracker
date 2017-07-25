@@ -8,7 +8,7 @@ const trackUrl = "http://localhost:8080/track";
  * mapAPI = google.map Objekt (zum erstellen von PolyLine & Markern)
  * map = google.map.Map Objekt (karte an sich)
  * coordinates = koordinaten {lat, lng} des aktuell gezeichneten tracks
- * trackPah = google.map.PolyLine Objekt (gezeichnete Linie)
+ * trackPath = google.map.PolyLine Objekt (gezeichnete Linie)
  */
 var mapAPI;
 var map;
@@ -18,7 +18,7 @@ var startMarker = null;
 var endMarker = null;
 
 /*
- * Pagination vars
+ * Pagination vars:
  * tracks = Liste aller Tracks {trackID: int, trackName: String}
  * lastTrack = li des zuletzt angeklickten tracks
  */
@@ -48,7 +48,6 @@ mapsapi().then(
 	}
 );
 
-// onload: create http get request to init track list
 /*
  * onload: bei laden der Seite, GET request per fetch an Server schicken
  * und Daten der Tracks {trackID: int, trackName: String} in var tracks speichern
@@ -118,14 +117,14 @@ function onClick() {
  * zeichnen des höhengraphen
  */
 function drawHeightProfile(json) {
-	console.log(json);
+	//console.log(json);
 	let entries = json.features[0].geometry.coordinates;
 
 	var canvas = document.getElementById("heightGraph");
 	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	console.log(ctx.canvas.width, ctx.canvas.height);
-	console.log(entries);
+	//console.log(ctx.canvas.width, ctx.canvas.height);
+	//console.log(entries);
 	var max = -1;
 	for (var data in entries) {
 		if (entries[data][2] > max) {
@@ -134,13 +133,13 @@ function drawHeightProfile(json) {
 	}
 	var lineSize = ctx.canvas.width / entries.length;
 	var heightSize = ctx.canvas.height / max;
-	console.log(lineSize, max, heightSize);
+	// console.log(lineSize, max, heightSize);
 	ctx.lineWidth = lineSize;
 	ctx.beginPath();
 	for (var index = 0; index < entries.length; index++) {
 		var height = entries[index][2];
 		//console.log("HEIGHT: " + height);
-		ctx.moveTo(index * lineSize, ctx.canvas.height);
+		ctx.moveTo(index * lineSize, ctx.canvas.height + 10);
 		ctx.lineTo(index * lineSize, ctx.canvas.height - (height * heightSize) + 10);
 	}
 	ctx.stroke();
