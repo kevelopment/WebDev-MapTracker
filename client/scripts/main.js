@@ -12,6 +12,10 @@ var coordinates;
 var trackPath;
 // list of tracks: {trackID: id, trackName: name}
 var tracks = [];
+// markers for track
+var startMarker = null;
+var endMarker = null;
+var lastTrack = null;
 
 /*
  * Pagination vars:
@@ -67,6 +71,11 @@ window.onresize = function () {
 // onclick: get track data from server
 function onClick() {
 	// console.log("li.id: " + this.id);
+	if (lastTrack !== null) {
+		lastTrack.style.backgroundColor = "";
+	}
+	lastTrack = this;
+	this.style.backgroundColor = "#9CCC65";
 	var body = this.id;
 	fetch(trackUrl,
 		{ method: "POST", body: JSON.stringify(body) })
@@ -124,6 +133,18 @@ function drawOnMap(json) {
 		coordinates.push({ lat: entries[i][1], lng: entries[i][0] });
 	}
 
+	// remove possible previous marker
+	if (startMarker !== null) {
+		startMarker.setMap(null);
+		startMarker = null;
+	}
+	if (endMarker !== null) {
+		endMarker.setMap(null);
+		endMarker = null;
+	}
+
+	setMarkers(entries);
+
 	// create polyline
 	trackPath = new mapAPI.Polyline({
 		path: coordinates,
@@ -169,13 +190,17 @@ function fillTracks() {
 	var listHeight = winHeight - navHeight;
 
 	nrOfEntries = Math.floor(listHeight / liHeight);
-	console.log("trackslength: ", tracks.length);
-	console.log("nrOfEntries: ", nrOfEntries);
+	//console.log("trackslength: ", tracks.length);
+	//console.log("nrOfEntries: ", nrOfEntries);
 	pages = Math.ceil(tracks.length / nrOfEntries);
 	pageLi.innerHTML = currPage + " / " + pages;
-	console.log("currentPage: ", currPage);
-	console.log("nrOfEntries: ", nrOfEntries);
-	console.log("Pages: ", pages);
+	//console.log("currentPage: ", currPage);
+	//console.log("nrOfEntries: ", nrOfEntries);
+	//console.log("Pages: ", pages);
+
+	if (currPage > pages) {
+		currPage = pages;
+	}
 
 	// for each item in tracks: create list item
 	for (var track = (currPage - 1) * nrOfEntries; track < currPage * nrOfEntries; track++) {
@@ -186,7 +211,43 @@ function fillTracks() {
 		li.setAttribute("id", tracks[track].trackID);
 		li.innerHTML = tracks[track].trackName;
 		li.addEventListener("click", onClick, false);
+		if (lastTrack !== null && lastTrack.innerHTML === tracks[track].trackName) {
+			li.style.backgroundColor = "#9CCC65";
+			lastTrack = li;
+		}
 		trackList.appendChild(li);
+	}
+}
+
+function setMarkers(entries) {
+	// define start and end coordinates
+	var start = { lat: entries[0][1], lng: entries[0][0] };
+	var end = { lat: entries[entries.length - 1][1], lng: entries[entries.length - 1][0] };
+	// if end = start => 1 marker
+	if (entries[0][1] === entries[entries.length - 1][1] && entries[0][0] === entries[entries.length - 1][0]) {
+		startMarker = new mapAPI.Marker({
+			position: start,
+			map: map,
+			label: "S",
+			title: "Track Start!"
+		});
+	}
+	// else: 2 marker (start & end)
+	else {
+		// add start and end markers
+		startMarker = new mapAPI.Marker({
+			position: start,
+			map: map,
+			label: "S",
+			title: "Track Start!"
+		});
+
+		endMarker = new mapAPI.Marker({
+			position: end,
+			map: map,
+			label: "E",
+			title: "Track End!"
+		});
 	}
 }
 
