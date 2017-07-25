@@ -78,7 +78,8 @@ section {
   bottom: 1em;
   width: 25%;
   height: 20%;
-  background: white;
+  background: #FFF;
+  opacity: 0.75;
 }
 section canvas {
   width: 100%;

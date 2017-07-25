@@ -1,20 +1,28 @@
-var mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
-var fetch = require("node-fetch");
+const mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
+const fetch = require("node-fetch");
 
 const serverUrl = "http://localhost:8080/getAllTracks";
 const trackUrl = "http://localhost:8080/track";
-// mapAPI object for Polyline
+/*
+ * GMAPS vars:
+ * mapAPI = google.map Objekt (zum erstellen von PolyLine & Markern)
+ * map = google.map.Map Objekt (karte an sich)
+ * coordinates = koordinaten {lat, lng} des aktuell gezeichneten tracks
+ * trackPah = google.map.PolyLine Objekt (gezeichnete Linie)
+ */
 var mapAPI;
-// map Object
 var map;
 var coordinates;
-// coordinate[] of last drawn track
 var trackPath;
-// list of tracks: {trackID: id, trackName: name}
-var tracks = [];
-// markers for track
 var startMarker = null;
 var endMarker = null;
+
+/*
+ * Pagination vars
+ * tracks = Liste aller Tracks {trackID: int, trackName: String}
+ * lastTrack = li des zuletzt angeklickten tracks
+ */
+var tracks = [];
 var lastTrack = null;
 
 /*
@@ -27,56 +35,74 @@ var pages;
 var currPage;
 var nrOfEntries;
 
-// init maps api + map frame
+/*
+ * Google Maps API laden + map auf div anzeigen
+ * init koordinaten = trier
+ */
 mapsapi().then(
 	function (maps) {
 		let trier = { lat: 49.7596121, lng: 6.6440247 };
 		mapAPI = maps;
 		map = new maps.Map(document.getElementById("map"), { zoom: 14, center: trier });
-		console.log("MAPS API loaded");
+		//console.log("MAPS API loaded");
 	}
 );
 
 // onload: create http get request to init track list
+/*
+ * onload: bei laden der Seite, GET request per fetch an Server schicken
+ * und Daten der Tracks {trackID: int, trackName: String} in var tracks speichern
+ */
 window.onload = function () {
 	fetch(serverUrl)
 		.then(function (res) {
 			return res.text();
 		}).then(function (body) {
+			// data aus Server response entnehmen
 			var data = JSON.parse(body);
-			console.log(JSON.parse(body));
+			//console.log(JSON.parse(body));
 
+			// Daten in tracks speichern
 			for (var idx in data) {
 				tracks.push(data[idx]);
 			}
-
+			// Pagination initialisieren: aktuelle Seite = 1
 			currPage = 1;
+			// Tracks in ul anzeigen
 			fillTracks();
-
+			// < und > zum inc/dec des Seiten zählers initialisieren
 			var incPageLi = document.getElementById("inc");
 			var decPageLi = document.getElementById("dec");
 			incPageLi.addEventListener("click", () => { incrementPage(); });
 			decPageLi.addEventListener("click", () => { decrementPage(); });
 		});
-	// .then(function (json) {
-	// 	console.log(json);
-	// });
 };
 
+/*
+ * bei verändern der Fenstergröße: Pagination aktualisieren + track auf map zentrieren
+ */
 window.onresize = function () {
 	fillTracks();
 	fitMap();
 };
 
-// onclick: get track data from server
+/* 
+ * onClick() methode für alle Tracks:
+ * 	- visualisiere klick durch farbe
+ * 	- frage bei server daten zu track an
+ * 	- zeichne track auf karte
+ * 	- zeichne höhenprofil des tracks
+ */
 function onClick() {
-	// console.log("li.id: " + this.id);
+	// setze farbe zurück, falls vorher schon ein track angeklickt war
 	if (lastTrack !== null) {
 		lastTrack.style.backgroundColor = "";
 	}
 	lastTrack = this;
+	// setze farbe des geklickten tracks
 	this.style.backgroundColor = "#8BC34A";
 	var body = this.id;
+	// Daten vom Server beziehen über fetch 
 	fetch(trackUrl,
 		{ method: "POST", body: JSON.stringify(body) })
 		.then(function (res) {
@@ -88,6 +114,9 @@ function onClick() {
 		});
 }
 
+/*
+ * zeichnen des höhengraphen
+ */
 function drawHeightProfile(json) {
 	console.log(json);
 	let entries = json.features[0].geometry.coordinates;
@@ -112,28 +141,31 @@ function drawHeightProfile(json) {
 		var height = entries[index][2];
 		//console.log("HEIGHT: " + height);
 		ctx.moveTo(index * lineSize, ctx.canvas.height);
-		ctx.lineTo(index * lineSize, ctx.canvas.height - (height * heightSize));
+		ctx.lineTo(index * lineSize, ctx.canvas.height - (height * heightSize) + 10);
 	}
 	ctx.stroke();
 	//console.log("HIGHTDONE");
 }
 
+/*
+ * zeichnet @json Objekt auf die Karte
+ */ 
 function drawOnMap(json) {
-	//console.log("drawOnMap");
+	// entries = geo-json koordinaten
 	let entries = json.features[0].geometry.coordinates;
 
-	// reset previous map polyline
+	// falls noch ein gezeichneter pfad existiert: entfernen
 	if (trackPath !== undefined) {
 		trackPath.setMap(null);
 	}
 
-	// fill coordinates from file
+	// koordinaten für gmaps API vorbereiten
 	coordinates = [];
 	for (var i in entries) {
 		coordinates.push({ lat: entries[i][1], lng: entries[i][0] });
 	}
 
-	// remove possible previous marker
+	// vorherige marker entfernen,falls vorhanden
 	if (startMarker !== null) {
 		startMarker.setMap(null);
 		startMarker = null;
@@ -142,10 +174,10 @@ function drawOnMap(json) {
 		endMarker.setMap(null);
 		endMarker = null;
 	}
-
+	// marker für start bzw ende auf karte setzen
 	setMarkers(entries);
 
-	// create polyline
+	// linie anhand des tracks zeichnen
 	trackPath = new mapAPI.Polyline({
 		path: coordinates,
 		geodesic: true,
@@ -154,76 +186,88 @@ function drawOnMap(json) {
 		strokeWeight: 2
 	});
 
+	// karte zentrieren und zoomen
 	fitMap();
+	// track auf karte zeichnen 
 	trackPath.setMap(map);
 }
 
+/*
+ * Zentriert die Karte auf dem aktuellen Track
+ */ 
 function fitMap() {
-	// get polyline bounds
-	var bounds = new mapAPI.LatLngBounds();
-	trackPath.getPath().forEach(function (e) {
-		bounds.extend(e);
-	});
+	if (trackPath !== null) {
+		// bounds des aktuellen tracks berechnen (über maps api)
+		var bounds = new mapAPI.LatLngBounds();
 
-	// reihenfolge wichtig!!
-	map.fitBounds(bounds);
+		trackPath.getPath().forEach(function (e) {
+			bounds.extend(e);
+		});
+		// bounds auf karte zentrieren
+		map.fitBounds(bounds);
+	}
 }
 
 function fillTracks() {
+	// <ul> für einträge beziehen
 	var trackList = document.getElementById("tracks");
-	// reset trackList
+	// einträge von ul resetten
 	trackList.innerHTML = "";
 
-	var pageLi = document.getElementById("pages");
-
+	// li zur berechnung der größe reservieren
 	var li;
+	// höhe des fensters + des nav bereichs 
 	var winHeight = document.getElementById("trackSelector").offsetHeight;
 	var navHeight = document.getElementById("controls").offsetHeight;
-
+	// li zur berechnung der größe erstellen
 	li = document.createElement("li");
 	li.innerHTML = tracks[0].trackName;
 	trackList.appendChild(li);
-
+	// größe inkl padding berechnen und entfernen
 	var liHeight = li.offsetHeight + 16; // + padding top & bottom
 	li.parentNode.removeChild(li);
-
+	// höhe der liste berechnen
 	var listHeight = winHeight - navHeight;
-
+	// anzahl der einträge pro seite berechnen
 	nrOfEntries = Math.floor(listHeight / liHeight);
-	//console.log("trackslength: ", tracks.length);
-	//console.log("nrOfEntries: ", nrOfEntries);
+	// anzahl der seiten berechnen
 	pages = Math.ceil(tracks.length / nrOfEntries);
+	// li zur anzeige der seitenzahlen füllen
+	var pageLi = document.getElementById("pages");
 	pageLi.innerHTML = currPage + " / " + pages;
-	//console.log("currentPage: ", currPage);
-	//console.log("nrOfEntries: ", nrOfEntries);
-	//console.log("Pages: ", pages);
 
+	// fix für onresize (falls aktuelle seite > anzahl an seiten => aktuelle seite = letzte seite)
 	if (currPage > pages) {
 		currPage = pages;
 	}
 
-	// for each item in tracks: create list item
+	// jedes item auf seite als li erstellen + id etc. vergeben
 	for (var track = (currPage - 1) * nrOfEntries; track < currPage * nrOfEntries; track++) {
-		//tracks.push(tracks[track]);
-		// console.log(track, data[track]);
-		li = document.createElement("li");
-		li.setAttribute("class", "tracker-item");
-		li.setAttribute("id", tracks[track].trackID);
-		li.innerHTML = tracks[track].trackName;
-		li.addEventListener("click", onClick, false);
-		if (lastTrack !== null && lastTrack.innerHTML === tracks[track].trackName) {
-			li.style.backgroundColor = "#8BC34A";
-			lastTrack = li;
+		if (tracks[track] !== undefined) {
+			li = document.createElement("li");
+			li.setAttribute("class", "tracker-item");
+			li.setAttribute("id", tracks[track].trackID);
+			li.innerHTML = tracks[track].trackName;
+			li.addEventListener("click", onClick, false);
+			// angeklickter track soll auch in pagination dunkel hinterlegt werden/bleiben
+			if (lastTrack !== null && lastTrack.innerHTML === tracks[track].trackName) {
+				li.style.backgroundColor = "#8BC34A";
+				lastTrack = li;
+			}
+			trackList.appendChild(li);
 		}
-		trackList.appendChild(li);
 	}
 }
 
+/*
+ * setze marker auf map für angeklickten track
+ */
 function setMarkers(entries) {
-	// define start and end coordinates
+	// bestimme start und ende koordinaten (gmaps konform)
 	var start = { lat: entries[0][1], lng: entries[0][0] };
 	var end = { lat: entries[entries.length - 1][1], lng: entries[entries.length - 1][0] };
-	// if end = start => 1 marker
+
+	// falls start = end koordinate => erstelle nur einen marker
 	if (entries[0][1] === entries[entries.length - 1][1] && entries[0][0] === entries[entries.length - 1][0]) {
 		startMarker = new mapAPI.Marker({
 			position: start,
@@ -232,7 +276,7 @@ function setMarkers(entries) {
 			title: "Track Start!"
 		});
 	}
-	// else: 2 marker (start & end)
+	// sonst: erstelle 2 marker (start & end)
 	else {
 		// add start and end markers
 		startMarker = new mapAPI.Marker({
@@ -251,6 +295,7 @@ function setMarkers(entries) {
 	}
 }
 
+// aktuelle Seite inkrementieren
 function incrementPage() {
 	if (currPage < pages) {
 		currPage++;
@@ -258,6 +303,7 @@ function incrementPage() {
 	fillTracks();
 }
 
+// aktuelle Seite dekrementieren
 function decrementPage() {
 	if (currPage > 1) {
 		currPage--;
