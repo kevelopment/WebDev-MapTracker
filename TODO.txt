@@ -9,6 +9,8 @@ DONE:
 	- Höhenprofil des ausgewählten Tracks zeichnen (23.7.17/Simon)
 
 TODO:
+	- Marker für Start und Ziel!
+	- Höhengraph transparent
 	- Tranosformation des Höhenprofils, höchster wert ist immer oben am ende
 		bzw. Vergleichbarkeit der Werte. 
 		- Ist Punkt x auf dem einen Track gleich hoch wie Punkt y auf einem anderen Track?!?

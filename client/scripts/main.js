@@ -1,12 +1,27 @@
 var mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
 var fetch = require("node-fetch");
-var serverUrl = "http://localhost:8080/getAllTracks";
-var trackUrl = "http://localhost:8080/track";
+
+const serverUrl = "http://localhost:8080/getAllTracks";
+const trackUrl = "http://localhost:8080/track";
+// mapAPI object for Polyline
 var mapAPI;
+// map Object
 var map;
 var coordinates;
+// coordinate[] of last drawn track
 var trackPath;
+// list of tracks: {trackID: id, trackName: name}
 var tracks = [];
+
+/*
+ * Pagination vars:
+ * pages => nr of pages in total
+ * currPage => current Page index
+ * nrTracks => nr of tracks per page
+*/
+var pages;
+var currPage;
+var nrOfEntries;
 
 // init maps api + map frame
 mapsapi().then(
@@ -31,11 +46,22 @@ window.onload = function () {
 				tracks.push(data[idx]);
 			}
 
-			fillTracks(document.getElementById("tracks"));
+			currPage = 1;
+			fillTracks();
+
+			var incPageLi = document.getElementById("inc");
+			var decPageLi = document.getElementById("dec");
+			incPageLi.addEventListener("click", () => { incrementPage(); });
+			decPageLi.addEventListener("click", () => { decrementPage(); });
 		});
 	// .then(function (json) {
 	// 	console.log(json);
 	// });
+};
+
+window.onresize = function () {
+	fillTracks();
+	fitMap();
 };
 
 // onclick: get track data from server
@@ -84,7 +110,7 @@ function drawHeightProfile(json) {
 }
 
 function drawOnMap(json) {
-	console.log("drawOnMap");
+	//console.log("drawOnMap");
 	let entries = json.features[0].geometry.coordinates;
 
 	// reset previous map polyline
@@ -107,6 +133,11 @@ function drawOnMap(json) {
 		strokeWeight: 2
 	});
 
+	fitMap();
+	trackPath.setMap(map);
+}
+
+function fitMap() {
 	// get polyline bounds
 	var bounds = new mapAPI.LatLngBounds();
 	trackPath.getPath().forEach(function (e) {
@@ -115,12 +146,15 @@ function drawOnMap(json) {
 
 	// reihenfolge wichtig!!
 	map.fitBounds(bounds);
-	trackPath.setMap(map);
-	// map.setZoom(map.getZoom() - 1); => sieht besser aus
 }
 
-function fillTracks(trackList) {
-	// for each item in tracks: create list item
+function fillTracks() {
+	var trackList = document.getElementById("tracks");
+	// reset trackList
+	trackList.innerHTML = "";
+
+	var pageLi = document.getElementById("pages");
+
 	var li;
 	var winHeight = document.getElementById("trackSelector").offsetHeight;
 	var navHeight = document.getElementById("controls").offsetHeight;
@@ -133,10 +167,19 @@ function fillTracks(trackList) {
 	li.parentNode.removeChild(li);
 
 	var listHeight = winHeight - navHeight;
-	var nrOfEntries = Math.floor(listHeight / liHeight);
+
+	nrOfEntries = Math.floor(listHeight / liHeight);
+	console.log("trackslength: ", tracks.length);
 	console.log("nrOfEntries: ", nrOfEntries);
-	for (var track = 0; track < nrOfEntries; track++) {
-		tracks.push(tracks[track]);
+	pages = Math.ceil(tracks.length / nrOfEntries);
+	pageLi.innerHTML = currPage + " / " + pages;
+	console.log("currentPage: ", currPage);
+	console.log("nrOfEntries: ", nrOfEntries);
+	console.log("Pages: ", pages);
+
+	// for each item in tracks: create list item
+	for (var track = (currPage - 1) * nrOfEntries; track < currPage * nrOfEntries; track++) {
+		//tracks.push(tracks[track]);
 		// console.log(track, data[track]);
 		li = document.createElement("li");
 		li.setAttribute("class", "tracker-item");
@@ -145,4 +188,18 @@ function fillTracks(trackList) {
 		li.addEventListener("click", onClick, false);
 		trackList.appendChild(li);
 	}
+}
+
+function incrementPage() {
+	if (currPage < pages) {
+		currPage++;
+	}
+	fillTracks();
+}
+
+function decrementPage() {
+	if (currPage > 1) {
+		currPage--;
+	}
+	fillTracks();
 }
