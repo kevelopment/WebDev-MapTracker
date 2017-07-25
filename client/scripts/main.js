@@ -1,8 +1,7 @@
 const mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
 const fetch = require("node-fetch");
 
-const serverUrl = "http://localhost:8080/getAllTracks";
-const trackUrl = "http://localhost:8080/track";
+const serverUrl = "http://localhost:8080/track";
 /*
  * GMAPS vars:
  * mapAPI = google.map Objekt (zum erstellen von PolyLine & Markern)
@@ -102,14 +101,23 @@ function onClick() {
 	this.style.backgroundColor = "#8BC34A";
 	var body = this.id;
 	// Daten vom Server beziehen über fetch 
-	fetch(trackUrl,
-		{ method: "POST", body: JSON.stringify(body) })
+	console.log("STRINGIFY: " + JSON.stringify(body));
+	fetch(serverUrl + "/" + body,
+		{ method: "GET" })
 		.then(function (res) {
+			console.log(res);
+			console.log(res.ok);
+			if (res.status === 404) {
+				return null;
+			}
 			return res.text();
 		}).then(function (body) {
-			let json = JSON.parse(body);
-			drawOnMap(json);
-			drawHeightProfile(json);
+			console.log("BODY: " + body);
+			if (body) {
+				let json = JSON.parse(body);
+				drawOnMap(json);
+				drawHeightProfile(json);
+			}
 		});
 }
 
@@ -154,7 +162,7 @@ function drawOnMap(json) {
 	let entries = json.features[0].geometry.coordinates;
 
 	// falls noch ein gezeichneter pfad existiert: entfernen
-	if (trackPath !== undefined) {
+	if (trackPath) {
 		trackPath.setMap(null);
 	}
 
@@ -195,7 +203,7 @@ function drawOnMap(json) {
  * Zentriert die Karte auf dem aktuellen Track
  */ 
 function fitMap() {
-	if (trackPath !== null) {
+	if (trackPath) {
 		// bounds des aktuellen tracks berechnen (über maps api)
 		var bounds = new mapAPI.LatLngBounds();
 
