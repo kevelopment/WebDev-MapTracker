@@ -4,11 +4,14 @@ const bodyParser = require("body-parser");
 const controller = require("./server/controller");
 
 let app = express();
-
+// default PortNr = 8080
 var PORT = 8080;
 
-if (process.argv.length >= 3) {
+// falls Port in Kommandozeile übergeben wurde
+if (process.argv.length > 2) {
+	// prüfe ob zulässig (Zahl)
 	if (!isNaN(process.argv[2])) {
+		// setze Port
 		PORT = process.argv[2];
 	}
 }
@@ -21,7 +24,7 @@ controller(app);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-	var err = new Error("Not Found");
+	var err = new Error("Track Not Found");
 	err.status = 404;
 	next(err);
 });

@@ -99,20 +99,14 @@ function onClick() {
 	lastTrack = this;
 	// setze farbe des geklickten tracks
 	this.style.backgroundColor = "#8BC34A";
-	var body = this.id;
 	// Daten vom Server beziehen über fetch 
-	console.log("STRINGIFY: " + JSON.stringify(body));
-	fetch(serverUrl + "/" + body,
-		{ method: "GET" })
+	fetch(serverUrl + "/" + this.id, { method: "GET" })
 		.then(function (res) {
-			console.log(res);
-			console.log(res.ok);
 			if (res.status === 404) {
 				return null;
 			}
 			return res.text();
 		}).then(function (body) {
-			console.log("BODY: " + body);
 			if (body) {
 				let json = JSON.parse(body);
 				drawOnMap(json);
