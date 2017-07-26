@@ -1,6 +1,6 @@
 const mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
 const fetch = require("node-fetch");
-
+// url zu server um daten abzufangen
 const serverUrl = "http://localhost:8080/track";
 /*
  * GMAPS vars:
@@ -36,14 +36,15 @@ var nrOfEntries;
 
 /*
  * Google Maps API laden + map auf div anzeigen
- * init koordinaten = trier
  */
 mapsapi().then(
 	function (maps) {
+		// koordinaten für trier setzen
 		let trier = { lat: 49.7596121, lng: 6.6440247 };
+		// globales objekt für google maps api setzen
 		mapAPI = maps;
+		// Karte laden und als einstiegspunkt auf Trier setzen
 		map = new maps.Map(document.getElementById("map"), { zoom: 14, center: trier });
-		//console.log("MAPS API loaded");
 	}
 );
 
@@ -52,27 +53,37 @@ mapsapi().then(
  * und Daten der Tracks {trackID: int, trackName: String} in var tracks speichern
  */
 window.onload = function () {
+	// über fetch api get requests an server senden
 	fetch(serverUrl)
 		.then(function (res) {
-			return res.text();
-		}).then(function (body) {
-			// data aus Server response entnehmen
-			var data = JSON.parse(body);
-			//console.log(JSON.parse(body));
-
-			// Daten in tracks speichern
-			for (var idx in data) {
-				tracks.push(data[idx]);
+			// check, ob status 200 und content-type = application/json => res.json() weitergeben
+			if (res.status === 200 && res.headers.get("content-type").indexOf("application/json") === 0) {
+				return res.json();
 			}
-			// Pagination initialisieren: aktuelle Seite = 1
-			currPage = 1;
-			// Tracks in ul anzeigen
-			fillTracks();
-			// < und > zum inc/dec des Seiten zählers initialisieren
-			var incPageLi = document.getElementById("inc");
-			var decPageLi = document.getElementById("dec");
-			incPageLi.addEventListener("click", () => { incrementPage(); });
-			decPageLi.addEventListener("click", () => { decrementPage(); });
+			else {
+				// falls nicht zulässig, fehler werfen
+				throw new TypeError("418 I'm a teapot");
+			}
+		}).then(function (json) {
+			// Daten aus Server response entnehmen
+			if (json) {
+				// Daten in tracks speichern
+				for (var idx in json) {
+					tracks.push(json[idx]);
+				}
+				// Pagination initialisieren: aktuelle Seite = 1
+				currPage = 1;
+				// Tracks in ul anzeigen
+				fillTracks();
+				// < und > zum inc/dec des Seiten zählers initialisieren
+				var incPageLi = document.getElementById("inc");
+				var decPageLi = document.getElementById("dec");
+				incPageLi.addEventListener("click", () => { incrementPage(); });
+				decPageLi.addEventListener("click", () => { decrementPage(); });
+			}
+		}).catch(function (error) {
+			// falls status code & content-type nicht passen: fehler abfangen
+			console.error(error.message);
 		});
 };
 
@@ -102,16 +113,23 @@ function onClick() {
 	// Daten vom Server beziehen über fetch 
 	fetch(serverUrl + "/" + this.id, { method: "GET" })
 		.then(function (res) {
-			if (res.status === 404) {
-				return null;
+			// falls status = 200 und content-type = json: json objekt aus response erzeugen
+			if (res.status === 200 && res.headers.get("content-type").indexOf("application/json") === 0) {
+				return res.json();
 			}
-			return res.text();
-		}).then(function (body) {
-			if (body) {
-				let json = JSON.parse(body);
+			// sonst: TypeError erstellen
+			else {
+				throw new TypeError("Unexpected content-type");
+			}
+		}).then(function (json) {
+			// json daten aus response weiter verarbeiten: track & höhenprofil zeichnen
+			if (json) {
 				drawOnMap(json);
 				drawHeightProfile(json);
 			}
+		}).catch(function (err) {
+			// TypeError abfangen und ausgeben
+			console.error(err.message);
 		});
 }
 
@@ -209,6 +227,10 @@ function fitMap() {
 	}
 }
 
+/*
+ * Berechnet die Anzahl der Tracks/Seite, die angezeigt werden
+ * und füllt ul mit den tracks als li
+ */
 function fillTracks() {
 	// <ul> für einträge beziehen
 	var trackList = document.getElementById("tracks");
@@ -228,40 +250,53 @@ function fillTracks() {
 	var liHeight = li.offsetHeight + 16; // + padding top & bottom
 	li.parentNode.removeChild(li);
 	// höhe der liste berechnen
-	var listHeight = winHeight - navHeight;
+	var listHeight = winHeight - navHeight - 4;
+
 	// anzahl der einträge pro seite berechnen
 	nrOfEntries = Math.floor(listHeight / liHeight);
+	// falls höhe der liste kleiner wird als 2 * li => return und belasse liste, wie sie ist
+	if (listHeight <= liHeight) {
+		nrOfEntries = 1;
+	}
 	// anzahl der seiten berechnen
-	pages = Math.ceil(tracks.length / nrOfEntries);
+	pages = Math.max(1, Math.ceil(tracks.length / nrOfEntries));
 	// li zur anzeige der seitenzahlen füllen
-	var pageLi = document.getElementById("pages");
-	pageLi.innerHTML = currPage + " / " + pages;
 
 	// fix für onresize (falls aktuelle seite > anzahl an seiten => aktuelle seite = letzte seite)
 	if (currPage > pages) {
 		currPage = pages;
 	}
+	// falls aktuelle seite < 1, dann setze aktuelle seite = 1
+	else if (currPage < 1) {
+		currPage = 1;
+	}
+
+	var pageLi = document.getElementById("pages");
+	pageLi.innerHTML = currPage + " / " + pages;
 
 	// jedes item auf seite als li erstellen + id etc. vergeben
 	for (var track = (currPage - 1) * nrOfEntries; track < currPage * nrOfEntries; track++) {
 		if (tracks[track] !== undefined) {
+			// li mit id = trackID und text = trackName erstellen
 			li = document.createElement("li");
 			li.setAttribute("class", "tracker-item");
 			li.setAttribute("id", tracks[track].trackID);
 			li.innerHTML = tracks[track].trackName;
+			// EventListener für onClick setzen
 			li.addEventListener("click", onClick, false);
 			// angeklickter track soll auch in pagination dunkel hinterlegt werden/bleiben
 			if (lastTrack !== null && lastTrack.innerHTML === tracks[track].trackName) {
 				li.style.backgroundColor = "#8BC34A";
 				lastTrack = li;
 			}
+			// li der liste hinzufügen
 			trackList.appendChild(li);
 		}
 	}
 }
 
 /*
- * setze marker auf map für angeklickten track
+ * setze marker für start und ende auf map für angeklickten track
  */
 function setMarkers(entries) {
 	// bestimme start und ende koordinaten (gmaps konform)
@@ -296,7 +331,7 @@ function setMarkers(entries) {
 	}
 }
 
-// aktuelle Seite inkrementieren
+// aktuelle Seite inkrementieren und track-liste aktualisieren
 function incrementPage() {
 	if (currPage < pages) {
 		currPage++;
@@ -304,7 +339,7 @@ function incrementPage() {
 	fillTracks();
 }
 
-// aktuelle Seite dekrementieren
+// aktuelle Seite dekrementieren und track-liste aktualisieren
 function decrementPage() {
 	if (currPage > 1) {
 		currPage--;
