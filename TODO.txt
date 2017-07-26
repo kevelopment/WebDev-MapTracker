@@ -17,3 +17,4 @@ DONE:
 TODO:
 	- NPM-Scripte überprüfen
 	- falls sich Track mit Höhengraph überschneidet -> zoom = zoom - 1
+	- höhengraph code kommentieren
