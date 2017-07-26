@@ -33,6 +33,7 @@ var lastTrack = null;
 var pages;
 var currPage;
 var nrOfEntries;
+const activeColor = "#7CB342";
 
 /*
  * Google Maps API laden + map auf div anzeigen
@@ -109,7 +110,7 @@ function onClick() {
 	}
 	lastTrack = this;
 	// setze farbe des geklickten tracks
-	this.style.backgroundColor = "#8BC34A";
+	this.style.backgroundColor = activeColor;
 	// Daten vom Server beziehen über fetch 
 	fetch(serverUrl + "/" + this.id, { method: "GET" })
 		.then(function (res) {
@@ -137,33 +138,43 @@ function onClick() {
  * zeichnen des höhengraphen
  */
 function drawHeightProfile(json) {
-	//console.log(json);
 	let entries = json.features[0].geometry.coordinates;
 
 	var canvas = document.getElementById("heightGraph");
 	var ctx = canvas.getContext("2d");
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	//console.log(ctx.canvas.width, ctx.canvas.height);
-	//console.log(entries);
+
+	var width = ctx.canvas.width;
+	var height = ctx.canvas.height;
+	ctx.clearRect(0, 0, width, height);
+
 	var max = -1;
+	var min = 10000;
 	for (var data in entries) {
-		if (entries[data][2] > max) {
-			max = entries[data][2];
+		max = Math.max(max, entries[data][2]);
+		min = Math.min(min, entries[data][2]);
+	}
+
+	var widthScale = ctx.canvas.width / entries.length;
+	var heightScale = ctx.canvas.height / max;
+
+	ctx.lineWidth = widthScale;
+	ctx.beginPath();
+	ctx.moveTo(0, height);
+
+	for (var index = 0; index < entries.length; index++) {
+		var trackHeight = entries[index][2];
+		if (max - min < height / 2) {
+			ctx.lineTo(index * widthScale, height - (trackHeight * heightScale) + (height / 2));
+		}
+		else {
+			ctx.lineTo(index * widthScale, height - (trackHeight * heightScale) + 10);
 		}
 	}
-	var lineSize = ctx.canvas.width / entries.length;
-	var heightSize = ctx.canvas.height / max;
-	// console.log(lineSize, max, heightSize);
-	ctx.lineWidth = lineSize;
-	ctx.beginPath();
-	for (var index = 0; index < entries.length; index++) {
-		var height = entries[index][2];
-		//console.log("HEIGHT: " + height);
-		ctx.moveTo(index * lineSize, ctx.canvas.height + 10);
-		ctx.lineTo(index * lineSize, ctx.canvas.height - (height * heightSize) + 10);
-	}
+
+	ctx.lineTo(width, height);
+	ctx.closePath();
+	ctx.fill();
 	ctx.stroke();
-	//console.log("HIGHTDONE");
 }
 
 /*
@@ -286,7 +297,7 @@ function fillTracks() {
 			li.addEventListener("click", onClick, false);
 			// angeklickter track soll auch in pagination dunkel hinterlegt werden/bleiben
 			if (lastTrack !== null && lastTrack.innerHTML === tracks[track].trackName) {
-				li.style.backgroundColor = "#8BC34A";
+				li.style.backgroundColor = activeColor;
 				lastTrack = li;
 			}
 			// li der liste hinzufügen
