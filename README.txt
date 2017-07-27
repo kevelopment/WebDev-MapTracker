@@ -1,7 +1,5 @@
 Generelle Informationen zu dem Projekt
 
-Bearbeitet von: adamkev, felderms
-
 Getestete Bash:
 	Mac: 	Terminal
 	Win: 	Git Bash
@@ -35,21 +33,5 @@ Skripte in package.json:
 
 - clean		löscht public Ordner und alle node_modules
 
-
-Allgemeine Ergänzungen zur Aufgabenstellung:
-
-Wir haben uns kleinere Änderungen bzgl der Aufgabenstellung/Vorlage vorbehalten, wie z.B:
-	- aktuell ausgewählter Track wird farblich hinterlegt, damit der Nutzer erkennt, 
-	welchen Track er angeklickt hat
-
-	- Marker aus Google Maps API werden an Start und Ziel Koordinaten positioniert,
-	damit der Nutzer erkennt, wo Start bzw. Ende des Tracks ist 
-	(Fehlen der Marker bzw fehlende Beschriftung 
-
-	- Höhengraph hat im vgl. zur Aufgabenstellung invertierte Farben und kein Padding,
-	da aus persönlicher Sicht ansprechender/dezenter aussieht 
-
-	- Farbe des Navigationsbereich zur Paginierung geändert um Farbschema der Karte zu 
-	treffen
 
 
