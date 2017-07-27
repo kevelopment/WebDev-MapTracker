@@ -1,14 +1,13 @@
 {
   "name": "webdev",
   "version": "1.0.0",
-  "description": "",
-  "main": "./server/app.js",
+  "description": "Web App zur Visualisierung von GEOJSON-Dateien",
+  "main": "./app.js",
   "scripts": {
     "lint": "eslint ./scripts/*.js && eslint app.js && eslint server/*.js",
     "build": "npm install && eslint ./client/scripts/*.js && eslint ./app.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.js && babili ./public/main.js > ./public/main.min.js && lessc --clean-css ./client/styles/style.less ./public/style.min.css && cp client/index.html public",
     "debug": "npm install && eslint ./client/scripts/*.js && mkdir public && browserify ./client/scripts/main.js > ./public/main.min.js && lessc ./client/styles/style.less ./public/style.min.css && cp client/index.html public",
     "start": "node app.js",
-    "cleanWin": "rmdir /s public && rmdir /s node_modules",
     "clean": "rm -r public && rm -r node_modules"
   },
   "dependencies": {
@@ -25,6 +24,6 @@
     "less": "*",
     "less-plugin-clean-css": "*"
   },
-  "author": "",
+  "author": "adamkev, felderms",
   "license": "ISC"
 }

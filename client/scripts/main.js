@@ -162,7 +162,7 @@ function drawHeightProfile(json) {
 	ctx.lineWidth = widthScale;
 	ctx.beginPath();
 	// bei Koordinate 0, canvas.heigh (Nullpunkt) starten 
-	ctx.moveTo(0, height);
+	ctx.lineTo(0, height);
 	// durch alle Einträge laufen und Koordinate skaliert zu Pfad hinzufügen
 	for (var index = 0; index < entries.length; index++) {
 		var trackHeight = entries[index][2];
@@ -203,9 +203,6 @@ function drawOnMap(json) {
 		coordinates.push({ lat: entries[i][1], lng: entries[i][0] });
 	}
 
-	// Marker für Start bzw Ende auf Karte setzen
-	setMarkers(entries);
-
 	// Linie anhand der Koordinaten eines Tracks vorbereiten
 	trackPath = new mapAPI.Polyline({
 		path: coordinates,
@@ -215,10 +212,15 @@ function drawOnMap(json) {
 		strokeWeight: 2
 	});
 
-	// Karte zentrieren und zoomen
-	fitMap();
 	// Track auf Karte zeichnen 
 	trackPath.setMap(map);
+	// Marker für Start bzw Ende auf Karte setzen
+	setMarkers(entries);
+	// Karte zentrieren und zoomen
+	fitMap();
+	// fix für Marker, die manchmal nicht angezeigt werden: erst rein zoomen, dann raus zoomen
+	map.setZoom(map.getZoom() - 1);
+	map.setZoom(map.getZoom() + 1);
 }
 
 /*
