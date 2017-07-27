@@ -24,6 +24,6 @@
     "less": "*",
     "less-plugin-clean-css": "*"
   },
-  "author": "adamkev, felderms",
+  "author": "vudor, feldermsgit",
   "license": "ISC"
 }
