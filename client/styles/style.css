@@ -1,9 +1,17 @@
+/*
+ * base style für body
+ */
 html,
 body {
   height: 100%;
   margin: 0px;
   padding: 0px;
+  min-width: 400px;
+  min-height: 300px;
 }
+/*
+ * base style für map (links)
+ */
 main {
   height: 100%;
   width: 70%;
@@ -12,6 +20,9 @@ main {
   top: 0;
   bottom: 0;
 }
+/*
+ * base style für Navigationsbereich (pagination) rechts
+ */
 aside {
   background-color: #9CCC65;
   height: 100%;
@@ -20,6 +31,14 @@ aside {
   right: 0;
   top: 0;
   bottom: 0;
+}
+/*
+ * style für control Elemente in nav
+ */
+nav {
+  /*
+     * style für Liste in der control elemente
+     */
 }
 nav ul {
   font-family: Arial, Helvetica, sans-serif;
@@ -30,27 +49,44 @@ nav ul {
   padding: 0;
   display: flex;
   flex-direction: row;
+  white-space: nowrap;
+  /*
+         * style für alle Listenelemente
+         */
 }
 nav ul li {
   text-align: center;
   flex-grow: 1;
-  flex-shrink: 1;
+  flex-shrink: 0;
   justify-content: center;
   padding: 1em;
   margin: 0;
   width: auto;
   height: auto;
 }
+/*
+ * style für paginierte Liste der Tracks
+ */
 .tracker-list {
   flex-direction: row;
   flex-wrap: wrap;
   font-family: Arial, Helvetica, sans-serif;
 }
 .tracker-list ul {
+  /*
+         * jedes gerade Element Dunkelgrau, ungerade Hellgrau
+         */
   margin: 0;
   padding: 0;
   width: auto;
   height: auto;
+  white-space: nowrap;
+  /*
+         * mouseover für jedes li gerade und ungerade
+         */
+  /*
+         * style für jedes Listenelement
+         */
 }
 .tracker-list ul :nth-child(even) {
   background: #DDD;
@@ -70,29 +106,42 @@ nav ul li {
   height: auto;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
+/*
+ * style für container des Höhengraphen
+ */
 section {
   position: absolute;
   left: 1em;
   bottom: 1em;
   width: 25%;
-  height: 20%;
+  height: 15%;
   background: #FFF;
-  opacity: 0.75;
+  opacity: 0.7;
+  min-height: 50px;
+  min-width: 100px;
 }
 section canvas {
   width: 100%;
   height: 100%;
 }
+/*
+ * Transformation: Pfeil nach rechts Navigationselement
+ */
 .right {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
 }
+/*
+ * Transformation: Pfeil nach links Navigationselement
+ */
 .left {
   transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
 }
+/*
+ * style der i Elemente, die als Navigationspfeile dargestellt werden
+ */
 i {
   border: solid black;
   border-width: 0 .25em .25em 0;

@@ -4,7 +4,6 @@ let trackReader = require("./trackReader");
 module.exports = function (app) {
 	// assoziatives Array mit { trackID: int, trackName: String } aus trackReader beziehen
 	trackNames = trackReader.getTrackNames();
-
 	// bei GET /track => trackNames als JSON Objekt an client senden
 	app.get("/track", function (req, res) {
 		res.json(trackNames);
@@ -15,14 +14,14 @@ module.exports = function (app) {
 		var trackID = req.params.id;
 		var data = trackReader.getTrackName(trackID, trackNames);
 		if (!data) {
-			// falls requested track nicht existiert, Fehler werfen und an Client senden
+			// falls angefragter track nicht existiert, Fehler werfen und an Client senden
 			var err = new Error();
 			err.status = 500;
 			err.message = "501 Track not Available";
 			res.send(err.message);
 		}
 		else {
-			// falls track existiert, diesen als JSON-Objekt versenden
+			// falls track existiert, diesen als JSON-Objekt (per bodyparser.json()) versenden
 			res.json(data);
 		}
 	});

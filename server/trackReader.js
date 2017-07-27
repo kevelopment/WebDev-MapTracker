@@ -4,6 +4,8 @@ const dataPath = (path.join(__dirname, "./data"));
 
 /*
  * Utility Klasse für den Server um Daten aus /data Verzeichnis zu lesen
+ * Zugriffe auf Daten hier synchron, da bei Testen auf localhost kein großer Traffic
+ * sollte für größere Zahlen an parallelen Anfragen ggf. zu asynchronem Laden geändert werden
  */
 
 /*
@@ -11,7 +13,7 @@ const dataPath = (path.join(__dirname, "./data"));
  */
 exports.getTrackNames = function () {
 	let trackNames = [];
-	// synchrones Laden der Daten aus Verzeichnis
+	// synchrones Laden der Daten aus /data
 	fs.readdirSync(dataPath).forEach((file) => {
 		// für jede Datei: Dateinamen auslesen und als trackID, sowie Name des tracks als trackName speichern
 		let content = fs.readFileSync(path.join(dataPath, file));
@@ -24,7 +26,7 @@ exports.getTrackNames = function () {
 };
 
 /*
- * Prüfen, ob angefragte trackID zu einer vorhandenen Datei gehört
+ * Prüfen, ob angefragte trackID zu einer vorhandenen Datei existriert
  */
 exports.trackExists = function (trackID, trackNames) {
 	// durchlaufe trackNames
@@ -38,14 +40,14 @@ exports.trackExists = function (trackID, trackNames) {
 };
 
 /*
- * String des Namen eines Tracks zurückliefern, falls dieser existiert
+ * String des Namens eines Tracks zurückliefern, falls dieser existiert
  */
 exports.getTrackName = function (trackID, trackNames) {
-	// falls track nicht vorhanden
+	// falls track nicht vorhanden, gebe null zurück
 	if (!this.trackExists(trackID, trackNames)) {
 		return null;
 	}
-	// falls track vorhanden
+	// falls track vorhanden gebe track als JSON-Objekt zurück
 	else {
 		let content = fs.readFileSync(path.join(dataPath, trackID + ".json"));
 		let json = JSON.parse(content);

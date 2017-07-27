@@ -1,43 +1,78 @@
+/*
+ * base style für body
+ */
 html, body{
+    // komplette Höhe und Breite des Fensters einnehmen
     height: 100%;
+    // margin und padding auf 0 setzen
     margin: 0px;
-	padding: 0px;
+    padding: 0px;
+    min-width: 400px;
+    min-height: 300px;
 }
-
+/*
+ * base style für map (links)
+ */
 main {
+    // komplette Höhe und 70% der Breite des fenster einnehmen
     height: 100%;
     width: 70%;
+    // links positionieren
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
 }
 
+/*
+ * base style für Navigationsbereich (pagination) rechts
+ */
 aside {
+    // Hintergrundfarbe für tracklisten Navigation
     background-color: #9CCC65;
+    // komplette Höhe und 30% Breite einnehmen
     height: 100%;
     width: 30%;
+    // rechts positionieren
     position: absolute;
     right: 0;
     top: 0;
     bottom: 0;
 }
 
+/*
+ * style für control Elemente in nav
+ */
 nav{
+    /*
+     * style für Liste in der control elemente
+     */
     ul {
+        // Schriftart setzen
         font-family: Arial, Helvetica, sans-serif;
+        // Auflistungspunkte entfernen
         list-style-type: none;
         width: auto;
         height: auto;
+        // margin und padding überschreiben und auf 0 setzen
         margin: 0;
         padding: 0;
+        // Elemente in flex box packen
         display: flex;
-		flex-direction: row;
+        flex-direction: row;
+        // Zeilenumbruch bei verkleinern verhindern
 		white-space: nowrap;
+        /*
+         * style für alle Listenelemente
+         */
         li {
+            // Text zentrieren
             text-align: center;
+            // alle li gleich groß
             flex-grow: 1;
+            // Verkleinern ermöglichen
             flex-shrink: 0;
+            // Container zentrieren
             justify-content: center;
             padding: 1em;
             margin: 0;
@@ -47,11 +82,19 @@ nav{
     }
 }
 
+/*
+ * style für paginierte Liste der Tracks
+ */
 .tracker-list {
+    // flex box container init
     flex-direction: row;
     flex-wrap: wrap;
+    // Schriftart setzen
     font-family: Arial, Helvetica, sans-serif;
     ul {
+        /*
+         * jedes gerade Element Dunkelgrau, ungerade Hellgrau
+         */
         :nth-child(even) {
             background: #DDD;
         }
@@ -62,51 +105,75 @@ nav{
         padding: 0;
         width: auto;
         height: auto;
+        // Zeilenumbruch verhindern
 		white-space: nowrap;
+        /*
+         * mouseover für jedes li gerade und ungerade
+         */
         :hover:nth-child(odd) {
             background: #DCEDC8;
         }
-
         :hover:nth-child(even) {
             background: #C5E1A5;
         }
 
+        /*
+         * style für jedes Listenelement
+         */
         .tracker-item {
             padding: .5em;
             width: auto;
             height: auto;
-            overflow: hidden; 
+            // zu langer Text wird durch ... abgeschnitten
+            overflow: hidden;
             text-overflow: ellipsis;
         }
     }
 }
 
+/*
+ * style für container des Höhengraphen
+ */
 section {
+    // Position unten links in Fenster setzen
     position: absolute;
     left: 1em;
     bottom: 1em;
+    // Breite und Höhe dynamisch durch prozentuale Angaben
     width: 25%;
-    height: 20%;
+    height: 15%;
     background: #FFF;
-	opacity: 0.75;
+    // transparent machen
+    opacity: 0.7;
+    // min Höhe und Breite setzen, um verschieben zu verhindern
 	min-height: 50px;
 	min-width: 100px;
+    // Breite und Höhe des graphen setzen
     canvas {
         width: 100%;
         height: 100%;
     }
 }
 
+/*
+ * Transformation: Pfeil nach rechts Navigationselement
+ */
 .right {
     transform: rotate(-45deg);
     -webkit-transform: rotate(-45deg);
 }
 
+/*
+ * Transformation: Pfeil nach links Navigationselement
+ */
 .left {
     transform: rotate(135deg);
     -webkit-transform: rotate(135deg);
 }
 
+/*
+ * style der i Elemente, die als Navigationspfeile dargestellt werden
+ */
 i {
   border: solid black;
   border-width: 0 .25em .25em 0;
