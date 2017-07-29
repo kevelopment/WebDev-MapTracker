@@ -1,4 +1,4 @@
-Generelle Informationen zu dem Projekt
+﻿Generelle Informationen zu dem Projekt
 
 Getestete Bash:
 	Mac: 	Terminal

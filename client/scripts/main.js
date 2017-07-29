@@ -180,6 +180,7 @@ function drawHeightProfile(json) {
 	// Pfad beenden und zusammenführen
 	ctx.closePath();
 	// Pfad mit farbe (schwarz) füllen
+	ctx.fillStyle = "rgba(0, 0, 0)";
 	ctx.fill();
 	// Pfad zeichnen
 	ctx.stroke();
