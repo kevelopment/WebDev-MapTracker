@@ -1,7 +1,7 @@
-const mapsapi = require("google-maps-api")("AIzaSyDCmCd8AWwgFL_5oJWKSZOjoQHuHmYOZmQ");
+const mapsapi = require("google-maps-api")("<Google Maps Key here>");
 const fetch = require("node-fetch");
 // url zu server um daten abzufangen
-const serverUrl = "http://localhost:8080/track";
+const serverUrl = "http://" + window.location.host + "/track";
 /*
  * GMAPS vars:
  * mapAPI = google.map Objekt (zum erstellen von PolyLine & Markern)
@@ -164,10 +164,11 @@ function drawHeightProfile(json) {
 	// bei Koordinate 0, canvas.heigh (Nullpunkt) starten 
 	ctx.lineTo(0, height);
 	// durch alle Einträge laufen und Koordinate skaliert zu Pfad hinzufügen
+	var halfSized = (max - min < height / 2);
 	for (var index = 0; index < entries.length; index++) {
 		var trackHeight = entries[index][2];
 		// falls Track keine großen Höhenunterschiede hat => Skalierung anpassen, damit nich zu hoch gezeichnet wird
-		if (max - min < height / 2) {
+		if (halfSized) {
 			ctx.lineTo(index * widthScale, height - (trackHeight * heightScale) + (height / 2));
 		}
 		// sonst: Koordinate normal skaliert einzeichnen
@@ -220,8 +221,8 @@ function drawOnMap(json) {
 	// Karte zentrieren und zoomen
 	fitMap();
 	// fix für Marker, die manchmal nicht angezeigt werden: erst rein zoomen, dann raus zoomen
-	map.setZoom(map.getZoom() - 1);
-	map.setZoom(map.getZoom() + 1);
+	//map.setZoom(map.getZoom() - 1);
+	//map.setZoom(map.getZoom() + 1);
 }
 
 /*

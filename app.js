@@ -8,7 +8,6 @@ let app = express();
 var PORT = 8080;
 
 // falls Port in Kommandozeile übergeben wurde
-/*
 if (process.argv.length > 2) {
 	// prüfe ob zulässig (Zahl)
 	if (!isNaN(process.argv[2])) {
@@ -16,7 +15,6 @@ if (process.argv.length > 2) {
 		PORT = process.argv[2];
 	}
 }
-*/
 
 // statisch Dateien aus /public an Client senden
 app.use(express.static(path.join(__dirname, "./public")));
@@ -29,17 +27,12 @@ app.use(bodyParser.json());
 controller(app);
 
 // unzulässige Anfragen z.B. GET /abc abfangen und behandeln
-app.use(function (req, res, next) {
+app.use(function (req, res) {
 	// Error mit Status und Fehlermeldung erstellen
 	var err = new Error();
 	err.status = 501;
 	err.message = "501 Not Implemented";
-	// an error handler weitergeben
-	next(err);
-});
-
-// Error handler: Fehler an Client senden
-app.use(function (err, req, res) {
+	// Error an Client senden
 	res.status(err.status || 500);
 	res.send(err.message);
 });

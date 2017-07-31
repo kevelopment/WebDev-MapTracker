@@ -16,7 +16,7 @@ module.exports = function (app) {
 		if (!data) {
 			// falls angefragter track nicht existiert, Fehler werfen und an Client senden
 			var err = new Error();
-			err.status = 500;
+			err.status = 501;
 			err.message = "501 Track not Available";
 			res.send(err.message);
 		}
